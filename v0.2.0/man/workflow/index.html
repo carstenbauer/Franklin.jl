@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Workflow · JuDoc.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link href="../../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>JuDoc.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../../">Home</a></li><li><span class="toctext">Manual</span><ul><li class="current"><a class="toctext" href>Workflow</a><ul class="internal"><li><a class="toctext" href="#Local-editing-1">Local editing</a></li><li><a class="toctext" href="#Libraries-1">Libraries</a></li><li><a class="toctext" href="#Hosting-the-website-1">Hosting the website</a></li><li><a class="toctext" href="#Optimisation-step-1">Optimisation step</a></li><li><a class="toctext" href="#(git)-synchronisation-1">(git) synchronisation</a></li><li><a class="toctext" href="#Using-Literate.jl-1">Using Literate.jl</a></li></ul></li><li><a class="toctext" href="../syntax/">Syntax</a></li><li><a class="toctext" href="../templating/">Templating</a></li><li><a class="toctext" href="../themes/">Themes</a></li><li><a class="toctext" href="../contrib/">Contributing</a></li><li><a class="toctext" href="../troubleshooting/">Troubleshooting</a></li></ul></li><li><span class="toctext">Library</span><ul><li><a class="toctext" href="../../lib/design/">Design</a></li><li><a class="toctext" href="../../lib/public/">Public</a></li><li><a class="toctext" href="../../lib/internals/">Internals</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li>Manual</li><li><a href>Workflow</a></li></ul><a class="edit-page" href="https://github.com/tlienart/JuDoc.jl/blob/master/docs/src/man/workflow.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Workflow</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Workflow-1" href="#Workflow-1">Workflow</a></h1><p>In this section it is assumed that you will eventually host your website on GitHub or GitLab but it shouldn&#39;t be hard to adapt to your particular case if you intend to self-host or use another service.</p><p><strong>Contents</strong>:</p><ul><li><a href="#Local-editing-1">Local editing</a><ul><li><a href="#Folder-structure-1">Folder structure</a></li></ul></li><li><a href="#Libraries-1">Libraries</a><ul><li><a href="#Highlight-1">Highlight</a></li></ul></li><li><a href="#Hosting-the-website-1">Hosting the website</a><ul><li><a href="#Hosting-the-website-as-a-project-website-1">Hosting the website as a project website</a></li></ul></li><li><a href="#Optimisation-step-1">Optimisation step</a></li><li><a href="#(git)-synchronisation-1">(git) synchronisation</a><ul><li><a href="#Merge-conflicts-1">Merge conflicts</a></li></ul></li><li><a href="#Using-Literate.jl-1">Using Literate.jl</a></li></ul><h2><a class="nav-anchor" id="Local-editing-1" href="#Local-editing-1">Local editing</a></h2><p>To get started, the easiest is to use the <a href="../../lib/public/#JuDocTemplates.newsite"><code>newsite</code></a> function to generate a website folder which you can then modify to your heart&#39;s content. The command takes one mandatory argument: the name of the folder, and you can specify a template with <code>template=...</code>:</p><pre><code class="language-julia-repl">julia&gt; newsite(&quot;Test&quot;; template=&quot;pure-sm&quot;)
+✓ Website folder generated at Test (now the current directory).
+→ Use `serve()` from `JuDoc` to see the website in your browser.</code></pre>Click <a href="https://tlienart.github.io/JuDocTemplates.jl/" target="_blank" rel="noopener noreferrer">here</a> for a demo of the supported templates (opens in a new tab).<p>Once you have created a new site with the template of your choice and are in the corresponding folder (<code>newsite</code> will <code>cd</code> to the new folder) you can serve your website with</p><pre><code class="language-julia-repl">julia&gt; serve()
+✓ LiveServer listening on http://localhost:8000/ ...
+  (use CTRL+C to shut down)</code></pre><p>and navigate in a browser to the corresponding address to see the website being rendered.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>If you&#39;re using the Atom editor, you may like to use the <em>Atom browser</em> extension which allows you to have a browser in an Atom pane.</p></div></div><h3><a class="nav-anchor" id="Folder-structure-1" href="#Folder-structure-1">Folder structure</a></h3><p>The <a href="../../lib/public/#JuDocTemplates.newsite"><code>newsite</code></a> command above generates folders and examples files following the appropriate structure, so the easiest is to start with that and modify in place. The main folders (generated by <code>newsite</code>) are:</p><pre><code class="language-none">.
+├── assets/
+├── libs/
+└── src/</code></pre><p>Once you run <a href="../../lib/public/#JuDoc.serve"><code>serve</code></a> the first time, two additional folders are generated (<code>css/</code> and <code>pub/</code>) along with the landing page <code>index.html</code>.</p><p>Among these folders,</p><ul><li>the <strong>main folder</strong> is <code>src/</code> and its subfolders, this is effectively where the source for your site is,</li><li>you should <em>ignore</em> <code>css/</code> and <code>pub/</code> these are <em>generated</em> and any changes you&#39;d do there will be silently over-written whenever you modify files in <code>src/</code>; the same comment holds for <code>index.html</code>,</li><li>the folders <code>assets/</code> and <code>libs/</code> contain <em>auxiliary items</em> that are useful for your site: <code>assets/</code> would contain code snippets, images etc. while <code>libs/</code> would contain javascript libraries that you may need (KaTeX and highlight are in there by default).</li></ul><p>In the <code>src/</code> folder, the structure is:</p><pre><code class="language-none">.
+├── _css
+│   ├── judoc.css
+│   └── ...
+├── _html_parts
+│   ├── foot.html
+│   ├── head.html
+│   └── ...
+├── config.md
+├── index.md
+└── pages
+    ├── page1.md
+    └── ...</code></pre><p><strong>Pages</strong></p><p>The <code>index.md</code> will generate the site&#39;s landing page. The <code>pages/page1.md</code> would correspond to pages on your website (you can have whatever subfolder structure you want in there, and will just have to adapt internal links appropriately). See also the <a href="../syntax/#Syntax-1">Syntax</a>.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>At any point you can write pages in HTML from scratch if you want to go beyond what JuDoc can offer; these pages will just be copied as they are. So for instance you may prefer to write an <code>index.html</code> file instead of using the <code>index.md</code> to generate it. You would still put it at the exact same place though (<code>src/index.html</code>) and let JuDoc copy the files at the appropriate place.</p></div></div><p><strong>HTML parts</strong></p><p>The files in <code>_html_parts/</code> are the building blocks that will go around the (processed) content contained in the <code>*.md</code> pages. So the <code>head.html</code> will be inserted before, the <code>foot.html</code> after etc. Adjusting these will help you make sure the site has the exact layout you want. The layout can also depend on the page you&#39;re on if it uses <code>{{ispage path/to/page}} ... {{end}}</code>  (see <a href="../templating/#Templating-1">Templating</a>).</p><p><strong>CSS</strong></p><p>The style sheets in <code>_css/</code> will help you tune the way your site looks. The <code>judoc.css</code> is the stylesheet that corresponds more specifically to the styling of the <code>.jd-content</code> div and all that goes in it, it is usually the first style-sheet that should be loaded. The simplest way to adjust the style easily would be to define your own stylesheet <code>_css/adjustments.css</code> and it be the last stylesheet loaded in <code>_html_parts/head.html</code> so that you can easily overwrite whatever properties you don&#39;t like and define your own. You could also have specific stylesheet that would only be loaded on specific pages using <code>{{ispages ...}}</code> (see <a href="../templating/#Templating-1">Templating</a>).</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>It wouldn&#39;t be hard for JuDoc to use page variables in the CSS stylesheet too. You could then do things like</p><pre><code class="language-judoc">@def col1 = aliceblue</code></pre><p>and</p><pre><code class="language-css">.mydiv { color: $col1 }</code></pre><p>I&#39;m not 100% sure how useful that could be though so if you would like to see this happen, please open an issue!</p></div></div><p><strong>Folder organisation</strong></p><p>Auxiliary assets such as images, code snippets, pdfs etc. should ideally go in the <code>assets/</code> folder (or subfolders). The files that are in <code>assets/</code> will not tracked for change and will also not get copied around.</p><p>An alternative approach is to keep auxiliary assets in <code>src/pages/</code> (or subfolders). The main advantage being that some users might find it better to structure their content with the page markdown as well as the page resources in one folder. If you decide to do this, bear in mind that whatever is in <code>src/pages/</code> gets copied to the generated <code>pub/</code> folder during the initial website compilation. While this will be imperceptible if you only have a few light assets, it could slow the initial pass down if you have many heavy assets; if that&#39;s the case though, you are probably better off with the first approach putting all resources in <code>assets/</code> and subfolders.</p><h2><a class="nav-anchor" id="Libraries-1" href="#Libraries-1">Libraries</a></h2><p>Assuming you used the <a href="../../lib/public/#JuDocTemplates.newsite"><code>newsite</code></a> function to get started, you have a <code>libs/</code> folder with</p><pre><code class="language-none">.
+├── highlight/
+└── katex/</code></pre><p>If you require other libraries to run your website, this is where you should put them while not forgetting to load them in your <code>_html_parts</code>; for instance in the default <code>foot_highlight.html</code> you will find:</p><pre><code class="language-html">&lt;script src=&quot;/libs/highlight/highlight.pack.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;hljs.initHighlightingOnLoad();hljs.configure({tabReplace: &#39;    &#39;});&lt;/script&gt;</code></pre><p>which loads and applies <code>highlight.js</code>.</p><h3><a class="nav-anchor" id="Highlight-1" href="#Highlight-1">Highlight</a></h3><p>Assuming you used the <a href="../../lib/public/#JuDocTemplates.newsite"><code>newsite</code></a> function to get started, you have the <code>libs/highlight/</code> folder with</p><pre><code class="language-none">.
+├── github.min.css
+└── highlight.pack.js</code></pre><p>If you want to change either how things look or which languages are supported, you should head to <a href="https://highlightjs.org/download/">highlightjs.org</a>, select the languages you want in the <strong>Custom package</strong> section, download the bundle and copy over the relevant files to <code>libs/highlight/</code>. By default, the files that are created with <a href="../../lib/public/#JuDocTemplates.newsite"><code>newsite</code></a> allow highlighting for <code>bash</code>, <code>html/xml</code>, <code>python</code>, <code>julia</code>, <code>julia-repl</code>, <code>css</code>, <code>r</code>, <code>markdown</code>, <code>ini/TOML</code>, <code>ruby</code> and <code>yaml</code>.</p><p>Just remember to refer to the appropriate style-sheet in your HTML building blocks for instance the default <code>src/_html_parts/head_highlight.html</code> contains:</p><pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/libs/highlight/github.min.css&quot;&gt;</code></pre><h2><a class="nav-anchor" id="Hosting-the-website-1" href="#Hosting-the-website-1">Hosting the website</a></h2><p>In this section, the assumption is that you will host your website on GitHub. The procedure should be very similar with GitLab. If you&#39;re using your own hosting, you would pretty much just need to copy/clone the content of your folder.</p><p>On GitHub/GitLab, the first step is to create a repository that would be acceptable for a personal webpage.</p><ul><li>Follow the guide to <a href="https://pages.github.com/#user-site">do so on GitHub</a>.</li><li>Or the guide to <a href="https://about.gitlab.com/product/pages/">do so on GitLab</a>.</li></ul><p>Once the repository is created, clone it on your computer, remove whatever is in it if it wasn&#39;t empty and copy over the content of the website folder (so if you had done <code>newsite(&quot;Test/&quot;)</code> then you&#39;d copy over the content of the folder <code>Test</code> into the newly cloned folder <code>username.github.io/</code>).</p><p>Now just do the usual <code>git add</code>, <code>commit</code> and <code>push</code> and your site will be live in a matter of minutes.</p><h3><a class="nav-anchor" id="Hosting-the-website-as-a-project-website-1" href="#Hosting-the-website-as-a-project-website-1">Hosting the website as a project website</a></h3><p>You may want to host your website not as a user website on <code>username.github.io/</code> but as a project website on <code>username.github.io/project/</code>. For this to work well, the only thing that is required is to have all links start with <code>/project/</code> instead of just <code>/</code> (the default). JuDoc makes this easy to do this as a final step before publication.</p><p>The best way to do it is:</p><ol><li>specify a <code>prepath</code> global variable in your <code>src/config.md</code> file by adding a line: <code>@def prepath = &quot;project&quot;</code>,</li><li>use <a href="../../lib/public/#JuDoc.optimize"><code>optimize</code></a> and/or <a href="../../lib/public/#JuDoc.publish"><code>publish</code></a> (even if you don&#39;t do the minification or the prerendering).</li></ol><p>Alternatively, you can specify the <code>prepath</code> when calling <code>optimize</code> or <code>publish</code> so for instance:</p><pre><code class="language-julia-repl">julia&gt; optimize(prerender=false, minify=false, prepath=&quot;project&quot;)</code></pre><p>will do a pass over all generated pages and make sure all paths are prepended with <code>/project/</code>.</p><h2><a class="nav-anchor" id="Optimisation-step-1" href="#Optimisation-step-1">Optimisation step</a></h2><p>The <a href="../../lib/public/#JuDoc.optimize"><code>optimize</code></a> function should typically be run before you push your website online. That step can:</p><ol><li>pre-render KaTeX and highlight code to HTML so that the pages don&#39;t have to load these javascript libraries,</li><li>minify all generated HTML and CSS.</li></ol><p>Those steps (which you can opt out of using the appropriate keyword <code>prerender=false</code> or <code>minify=false</code>) may lead to faster loading pages.</p><p>In order to run this optimisation step, you will need some <a href="/#External-dependencies-1">dependencies</a> but if you don&#39;t have them, JuDoc will tell you and ignore the corresponding step. Note also that doing a full pass of pre-rendering and minifying may take a few seconds depending on how many pages you have.</p><h2><a class="nav-anchor" id="(git)-synchronisation-1" href="#(git)-synchronisation-1">(git) synchronisation</a></h2><p>The <a href="../../lib/public/#JuDoc.publish"><code>publish</code></a> function helps you wrap the <a href="../../lib/public/#JuDoc.optimize"><code>optimize</code></a> step as well as a git <code>add</code>, <code>commit</code> and <code>push</code> all in one (provided the <code>optimize</code> step didn&#39;t fail).</p><p>So, in short, your full workflow may look like</p><pre><code class="language-julia">using JuDoc
+# cd to the appropriate directory
+cd(&quot;path/user.github.io&quot;)
+# start serving
+serve()
+# ...
+# edit things, add pages, tune layout etc.
+# while keeping an eye on the browser to check
+# ...
+# all looks good, stop the server with CTRL+C
+^C
+# and now the final step to optimize and push:
+publish()</code></pre><h3><a class="nav-anchor" id="Merge-conflicts-1" href="#Merge-conflicts-1">Merge conflicts</a></h3><p>Since the <code>pub/</code> and <code>css/</code> and <code>index.html</code> folder are <em>generated</em>, it can sometimes cause git merge conflicts if, for instance, you have edited your website on computer A, optimised and published it and then subsequently pulled on computer B where – say – the content hasn&#39;t been minified yet. This could cause messy merge conflicts that would be annoying to fix. An easy way to reduce this risk is to simply remove the generated folders and files before pulling.</p><p>The function <a href="../../lib/public/#JuDoc.cleanpull"><code>cleanpull</code></a> does precisely that and should be used if you intend to edit your website from multiple computers. It simply:</p><ol><li>removes all generate folders/files from your current director,</li><li>pulls.</li></ol><p>So in such a case, your full workflow would be:</p><pre><code class="language-julia">using JuDoc
+cd(&quot;path/user.github.io&quot;)
+cleanpull()
+serve()
+# ...
+publish()</code></pre><h2><a class="nav-anchor" id="Using-Literate.jl-1" href="#Using-Literate.jl-1">Using Literate.jl</a></h2><p>(<em>Thanks to <a href="https://github.com/cormullion">@cormullion</a> for this section</em>)</p><p>You can use Fredrik Ekre&#39;s <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a> package to create Markdown pages suitable for including in your JuDoc workflow. Literate.jl lets you write everything in a Julia source file, including your code, comments, tests, generated plots, and so on. When you execute the Julia file, all your code runs, and you can arrange for Literate.jl to write output such as Markdown-formatted text (and/or Jupyter notebooks) to suitable files. Literate.jl&#39;s syntax relies on various different flavours of comment, some of which are shown in the simple example below.</p><p>All non-Julia code has to be commented. Markdown markup language is applied immediately after the first <code>#</code>. You can see the <code>&gt;</code> Markdown quote syntax and the <code>##</code> Markdown header level 2 syntax. Lines preceded by <code>#jl</code> are not included in the Markdown output. Lines ending with <code>#src</code> are evaluated when you run the Julia file, but are not copied into the Markdown output file. Lines beginning with <code>#src</code> are Julia comments that don&#39;t make it as far as the Markdown file. Refer to <a href="https://fredrikekre.github.io/Literate.jl/stable/">Literate.jl&#39;s docs</a> for more information.</p><p>You can see from the final five lines in the example that, when you run this file in Julia, the final step is to run the <code>Literate.markdown</code> function, taking the name of the Julia source file (<code>functionoftheweek.jl</code>) as input, and writing a new Markdown file to the directory <code>src/pages/</code> as <code>fotw_floorceil.md</code>. Finally, if the JuDoc server is running, you&#39;ll find the generated HTML page as <code>/pub/fotw_floorceil.html</code>.</p><pre><code class="language-none">#jl This is a Julia source file!
+
+# @def title = &quot;Function of the week: floorceil()&quot;
+# @def hascode = true
+
+# &gt; To be, or not to be. That&#39;s what they reckon.
+
+# ## Function of the week: floorceil()
+
+# Welcome to another weekly post in which I present a cool Julia function that I&#39;ve
+# just discovered. This week it&#39;s the turn of `floorceil()`. It might sound like
+# something that comes in a tin, but in fact it&#39;s a useful function in the Dates module
+# that returns two Dates or DateTimes, one before, and one after, the specified time by
+# a certain unit of time.
+
+# For example:
+
+using Dates
+
+Dates.now()
+
+#
+# 2019-05-09T11:29:23.913
+#
+#src # would be nice if the output from commands could be included!
+
+Dates.floorceil(now(), Dates.Month(1))
+
+#
+# (2019-05-01T00:00:00, 2019-06-01T00:00:00)
+#
+
+# and you can see that the result contains the beginning and the end of the month
+# that includes the present time of day.
+
+a, b = (Dates.floorceil(now(), Dates.Month(1)));
+Dates.canonicalize(Dates.CompoundPeriod(b - a))
+
+#
+# 4 weeks, 3 days
+#
+
+# That&#39;s all for today. Until next time!
+
+#src Lines with this tag appear only in this Julia source file.
+using Literate                             #src
+Literate.markdown(&quot;functionoftheweek.jl&quot;,  #src
+    &quot;src/pages/&quot;,                          #src
+    name=&quot;fotw_floorceil&quot;,                 #src
+    documenter=false)                      #src
+</code></pre><p>When this Julia file is executed, the resulting Markdown output will look like the listing below. Notice that the two JuDoc <code>@def</code> lines have survived the journey from Julia to Markdown intact, and will now be actively available for the JuDoc generation process.</p><pre><code class="language-none">@def title = &quot;Function of the week: floorceil()&quot;
+@def hascode = true
+
+&gt; To be, or not to be. That&#39;s what they reckon.
+
+## Function of the week: floorceil()
+
+Welcome to another weekly post in which I present a cool Julia function that I&#39;ve
+just discovered. This week it&#39;s the turn of `floorceil()`. It might sound like
+something that comes in a tin, but in fact it&#39;s a useful function in the Dates module
+that returns two Dates or DateTimes, one before, and one after, the specified time by
+a certain unit of time.
+
+For example:
+
+```julia
+using Dates
+
+Dates.now()
+```
+
+2019-05-09T11:29:23.913
+
+```julia
+Dates.floorceil(now(), Dates.Month(1))
+```
+
+(2019-05-01T00:00:00, 2019-06-01T00:00:00)
+
+and you can see that the result contains the beginning and the end of the month
+that includes the present time of day.
+
+```julia
+a, b = (Dates.floorceil(now(), Dates.Month(1)));
+Dates.canonicalize(Dates.CompoundPeriod(b - a))
+```
+
+4 weeks, 3 days
+
+That&#39;s all for today. Until next time!
+
+*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*</code></pre><footer><hr/><a class="previous" href="../../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../syntax/"><span class="direction">Next</span><span class="title">Syntax</span></a></footer></article></body></html>
